@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     private int _cumulativeScore;
     private int _energy;
     private const int MaxEnergy = 100;
+    private bool _gameOver;
 
     private void Start()
     {
@@ -143,7 +144,8 @@ public class GameManager : MonoBehaviour
     {
         disableOnGameOver.SetActive(false);
         gameOverText.SetActive(true);
-        submitButton.interactable = false;
+        submitButtonText.text = "Play Again";
+        _gameOver = true;
 
         if (debugMode)
             Debug.Log($"Game over! Final score: {_cumulativeScore}");
@@ -152,6 +154,19 @@ public class GameManager : MonoBehaviour
     // Wire this to the submit/continue button's OnClick event
     public void OnSubmitButtonPressed()
     {
+        if (_gameOver)
+        {
+            _cumulativeScore = 0;
+            _energy = MaxEnergy;
+            UpdateScoreDisplay();
+            UpdateEnergyDisplay();
+            gameOverText.SetActive(false);
+            disableOnGameOver.SetActive(true);
+            _gameOver = false;
+            submitButton.interactable = true;
+            StartRound();
+            return;
+        }
         if (_awaitingContinue)
         {
             StartRound();
