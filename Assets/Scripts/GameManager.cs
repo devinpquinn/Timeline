@@ -18,6 +18,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button submitButton;
     [SerializeField] private TMP_Text submitButtonText;
     [SerializeField] private TMP_Text scoreText;
+    [SerializeField] private TMP_Text energyText;
+    [SerializeField] private GameObject disableOnGameOver;
+    [SerializeField] private GameObject gameOverText;
 
     private struct HistoricalEvent
     {
@@ -29,12 +32,18 @@ public class GameManager : MonoBehaviour
     private int _correctAnswer;
     private bool _awaitingContinue;
     private int _cumulativeScore;
+    private int _energy;
+    private const int MaxEnergy = 100;
 
     private void Start()
     {
         LoadEvents();
         _cumulativeScore = 0;
+        _energy = MaxEnergy;
         UpdateScoreDisplay();
+        UpdateEnergyDisplay();
+        gameOverText.SetActive(false);
+        disableOnGameOver.SetActive(true);
         StartRound();
     }
 
@@ -124,6 +133,22 @@ public class GameManager : MonoBehaviour
             scoreText.text = $"Score: {_cumulativeScore}";
     }
 
+    private void UpdateEnergyDisplay()
+    {
+        if (energyText != null)
+            energyText.text = $"Energy: {_energy} / {MaxEnergy}";
+    }
+
+    private void EndGame()
+    {
+        disableOnGameOver.SetActive(false);
+        gameOverText.SetActive(true);
+        submitButton.interactable = false;
+
+        if (debugMode)
+            Debug.Log($"Game over! Final score: {_cumulativeScore}");
+    }
+
     // Wire this to the submit/continue button's OnClick event
     public void OnSubmitButtonPressed()
     {
@@ -143,6 +168,16 @@ public class GameManager : MonoBehaviour
             int roundScore = (100 - distance) * (100 - distance);
             _cumulativeScore += roundScore;
             UpdateScoreDisplay();
+
+            _energy -= distance;
+            if (_energy <= 0)
+            {
+                _energy = 0;
+                UpdateEnergyDisplay();
+                EndGame();
+                return;
+            }
+            UpdateEnergyDisplay();
 
             correctAnswerText.text = $"Correct Answer:\n{_correctAnswer}";
             correctAnswerText.gameObject.SetActive(true);
