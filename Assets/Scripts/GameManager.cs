@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text correctAnswerText;
     [SerializeField] private Button submitButton;
     [SerializeField] private TMP_Text submitButtonText;
+    [SerializeField] private TMP_Text scoreText;
 
     private struct HistoricalEvent
     {
@@ -27,10 +28,13 @@ public class GameManager : MonoBehaviour
     private List<HistoricalEvent> _events = new List<HistoricalEvent>();
     private int _correctAnswer;
     private bool _awaitingContinue;
+    private int _cumulativeScore;
 
     private void Start()
     {
         LoadEvents();
+        _cumulativeScore = 0;
+        UpdateScoreDisplay();
         StartRound();
     }
 
@@ -114,6 +118,12 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Round started — Start: {a.Name} ({a.Year}), End: {b.Name} ({b.Year}), Guess: {guessEvent.Name} ({guessEvent.Year}) | Correct: {_correctAnswer}");
     }
 
+    private void UpdateScoreDisplay()
+    {
+        if (scoreText != null)
+            scoreText.text = $"Score: {_cumulativeScore}";
+    }
+
     // Wire this to the submit/continue button's OnClick event
     public void OnSubmitButtonPressed()
     {
@@ -128,6 +138,12 @@ public class GameManager : MonoBehaviour
             answerSlider.value = _correctAnswer;
             answerSlider.gameObject.SetActive(true);
 
+            int playerGuess = Mathf.RoundToInt(guessSlider.value);
+            int distance = Mathf.Abs(playerGuess - _correctAnswer);
+            int roundScore = (100 - distance) * (100 - distance);
+            _cumulativeScore += roundScore;
+            UpdateScoreDisplay();
+
             correctAnswerText.text = $"Correct Answer:\n{_correctAnswer}";
             correctAnswerText.gameObject.SetActive(true);
 
@@ -135,7 +151,7 @@ public class GameManager : MonoBehaviour
             _awaitingContinue = true;
 
             if (debugMode)
-                Debug.Log($"Player guessed {Mathf.RoundToInt(guessSlider.value)}, correct answer was {_correctAnswer}");
+                Debug.Log($"Player guessed {playerGuess}, correct answer was {_correctAnswer}, round score: {roundScore}, total: {_cumulativeScore}");
         }
     }
 }

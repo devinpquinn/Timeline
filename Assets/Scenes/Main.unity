@@ -2303,6 +2303,7 @@ MonoBehaviour:
   correctAnswerText: {fileID: 135119143}
   submitButton: {fileID: 741083115}
   submitButtonText: {fileID: 287288131}
+  scoreText: {fileID: 511142716}
 --- !u!4 &908506802
 Transform:
   m_ObjectHideFlags: 0
