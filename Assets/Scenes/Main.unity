@@ -313,7 +313,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Correct Answer:75
+  m_text: 'Correct Answer:
+
+    75'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1998,7 +2000,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 741083116}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 908506801}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnSubmitButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &741083116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2280,9 +2294,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa17818f50a8d584ea3a52f2c1829d96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  debugMode: 0
   startEventText: {fileID: 1171117894}
   endEventText: {fileID: 880225324}
   guessEventText: {fileID: 314649118}
+  guessSlider: {fileID: 706472458}
+  answerSlider: {fileID: 916575348}
+  correctAnswerText: {fileID: 135119143}
+  submitButton: {fileID: 741083115}
+  submitButtonText: {fileID: 287288131}
 --- !u!4 &908506802
 Transform:
   m_ObjectHideFlags: 0
@@ -2384,7 +2404,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 75
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []

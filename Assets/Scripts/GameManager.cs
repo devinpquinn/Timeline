@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text startEventText;
     [SerializeField] private TMP_Text endEventText;
     [SerializeField] private TMP_Text guessEventText;
+    [SerializeField] private Slider guessSlider;
+    [SerializeField] private Slider answerSlider;
+    [SerializeField] private TMP_Text correctAnswerText;
+    [SerializeField] private Button submitButton;
+    [SerializeField] private TMP_Text submitButtonText;
 
     private struct HistoricalEvent
     {
@@ -19,6 +25,8 @@ public class GameManager : MonoBehaviour
     }
 
     private List<HistoricalEvent> _events = new List<HistoricalEvent>();
+    private int _correctAnswer;
+    private bool _awaitingContinue;
 
     private void Start()
     {
@@ -81,12 +89,54 @@ public class GameManager : MonoBehaviour
         HistoricalEvent guessEvent = picked[1];
         HistoricalEvent b = picked[2];
 
+        // Calculate the correct answer as a 0-100 integer percentage
+        float span = b.Year - a.Year;
+        _correctAnswer = span > 0 ? Mathf.RoundToInt((guessEvent.Year - a.Year) / span * 100f) : 0;
+
+        // Reset UI for new round
         startEventText.text = a.Name;
         endEventText.text = b.Name;
         guessEventText.text = guessEvent.Name;
 
+        guessSlider.value = 50;
+        guessSlider.interactable = true;
+
+        answerSlider.value = 0;
+        answerSlider.gameObject.SetActive(false);
+
+        correctAnswerText.text = string.Empty;
+        correctAnswerText.gameObject.SetActive(false);
+
+        submitButtonText.text = "Submit";
+        _awaitingContinue = false;
+
         if (debugMode)
-            Debug.Log($"Round started — Start: {a.Name} ({a.Year}), End: {b.Name} ({b.Year}), Guess: {guessEvent.Name} ({guessEvent.Year})");
+            Debug.Log($"Round started — Start: {a.Name} ({a.Year}), End: {b.Name} ({b.Year}), Guess: {guessEvent.Name} ({guessEvent.Year}) | Correct: {_correctAnswer}");
+    }
+
+    // Wire this to the submit/continue button's OnClick event
+    public void OnSubmitButtonPressed()
+    {
+        if (_awaitingContinue)
+        {
+            StartRound();
+        }
+        else
+        {
+            guessSlider.interactable = false;
+
+            answerSlider.value = _correctAnswer;
+            answerSlider.gameObject.SetActive(true);
+
+            correctAnswerText.text = $"Correct Answer:\n{_correctAnswer}";
+            correctAnswerText.gameObject.SetActive(true);
+
+            submitButtonText.text = "Continue";
+            _awaitingContinue = true;
+
+            if (debugMode)
+                Debug.Log($"Player guessed {Mathf.RoundToInt(guessSlider.value)}, correct answer was {_correctAnswer}");
+        }
     }
 }
 
